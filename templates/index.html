@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Instagram DM Sender</title>
+</head>
+<body>
+  <h1>Instagram DM Sender</h1>
+
+  {% if error %}
+    <p style="color:red">{{ error }}</p>
+  {% endif %}
+
+  {% if message %}
+    <p>{{ message }}</p>
+  {% endif %}
+
+  {% if job_id %}
+    <p>Job started: <strong>{{ job_id }}</strong></p>
+    <p>Status URL: <a href="{{ status_url }}">{{ status_url }}</a></p>
+    <div id="status"></div>
+
+    <script>
+      const statusUrl = "{{ status_url }}";
+      async function poll() {
+        try {
+          const res = await fetch(statusUrl);
+          const data = await res.json();
+          document.getElementById('status').innerText = JSON.stringify(data, null, 2);
+          if (data.status !== 'done' && data.status !== 'error') {
+            setTimeout(poll, 2000);
+          }
+        } catch (e) {
+          document.getElementById('status').innerText = "Error fetching status: " + e;
+        }
+      }
+      poll();
+    </script>
+  {% else %}
+    <form method="post" enctype="multipart/form-data">
+      <label>Instagram Username: <input type="text" name="username" required></label><br>
+      <label>Password: <input type="password" name="password" required></label><br>
+      <label>Recipient (username or group name): <input type="text" name="recipient" required></label><br>
+      <label>Interval (seconds): <input type="number" name="interval" value="5" min="1"></label><br>
+      <label>Prefix (haters_name): <input type="text" name="haters_name"></label><br>
+      <label>Messages file (.txt): <input type="file" name="message_file" accept=".txt" required></label><br>
+      <button type="submit">Send Messages</button>
+    </form>
+  {% endif %}
+</body>
+</html>
