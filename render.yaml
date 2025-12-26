@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: dragon-insta-spammer
+    env: python
+    plan: free
+    buildCommand: pip install flask requests
+    startCommand: python main.py
+    envVars:
+      - key: FLASK_ENV
+        value: production
